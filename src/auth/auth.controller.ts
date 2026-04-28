@@ -17,7 +17,7 @@ export class AuthController {
   @Post('login') //default 201
   async login(
     @Body() loginDto: LoginDto
-  ): Promise<{ accessToken: string; user: User }> {
+  ): Promise<{ accessToken: string; user: Omit<User, 'password'> }> {
     return this.authService.login(loginDto);
   }
 }

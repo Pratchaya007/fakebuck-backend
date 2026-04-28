@@ -25,3 +25,4 @@ pnpm i zod
 pnpm i @nestjs/swagger  ใช้ในการดึงข้อมูลจาก class ต่างๆ
 pnpm i bcrypt
 pnpm i -D @types/bcrypt
+pnpm i @nestjs/jwt   ใช้ในการสร้างขข้อมูล Token
