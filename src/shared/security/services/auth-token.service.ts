@@ -11,10 +11,17 @@ export class AuthTokenService {
   ) {}
 
   //generate accsetoken
-  sign(payload: JwtPayload): Promise<string> {
+  sign(payload: Omit<JwtPayload, 'iat' | 'exp'>): Promise<string> {
     return this.jwtService.signAsync(payload, {
       secret: this.typeConfigService.get('JWT_SECRET'),
       expiresIn: this.typeConfigService.get('JWT_EXPIRES_IN')
+    });
+  }
+
+  // verify เอา JWT_SECRET มาตรวจสอบ
+  verify(token: string): Promise<JwtPayload & { iat: number; exp: number }> {
+    return this.jwtService.verifyAsync(token, {
+      secret: this.typeConfigService.get('JWT_SECRET')
     });
   }
 }

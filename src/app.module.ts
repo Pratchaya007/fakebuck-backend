@@ -8,7 +8,13 @@ import { UserModule } from './user/user.module';
 import { SecurityModule } from './shared/security/security.module';
 
 @Module({
-  imports: [ConfigModule, DatabaseModule, AuthModule, UserModule, SecurityModule],
+  imports: [
+    ConfigModule,
+    DatabaseModule,
+    AuthModule,
+    UserModule,
+    SecurityModule
+  ],
   providers: [
     {
       provide: APP_GUARD,

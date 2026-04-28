@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
@@ -20,4 +20,7 @@ export class AuthController {
   ): Promise<{ accessToken: string; user: Omit<User, 'password'> }> {
     return this.authService.login(loginDto);
   }
+
+  @Get('me')
+  async getCurrentUser() {}
 }
