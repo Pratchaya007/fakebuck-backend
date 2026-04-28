@@ -1,0 +1,6 @@
+openssl rand -base64 32  ----------> random jwt 
+pnpm i @nestjs/config ---------> config Env
+pnpm i zod
+
+nest g mo config ------> create Module and announce Gobal Module อะไรที่จะใช้งานบ่อยควรทำ
+nest g s cofing/typed-config --flat --no-spec -----> create con
