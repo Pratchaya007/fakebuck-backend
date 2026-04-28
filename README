@@ -1,10 +1,14 @@
 openssl rand -base64 32  ----------> random jwt 
 pnpm i @nestjs/config ---------> config Env
-pnpm i zod
+
 
 nest g mo config ------> create Module and announce Gobal Module อะไรที่จะใช้งานบ่อยควรทำ
 nest g s cofing/typed-config --flat --no-spec -----> create con
 nest g mo database
+nest g gu auth/guards/auth --flat --no-spec
+nest g mo auth
+nest g s auth --no-spec
+nest g co auth --no-spec
 
 
 - Prisma setthing ( moduleFormat = "cjs" and  Name: "../src/database/generated/prisma"   )
@@ -13,3 +17,8 @@ pnpm i @prisma/client @prisma/adapter-pg
 pnpm i -D @types/pg
 pnpm prisma migrate dev
 pnpm prisma generate
+
+- Validate data 
+pnpm i class-transformer class-validator
+pnpm i zod
+pnpm i @nestjs/swagger  ใช้ในการดึงข้อมูลจาก class ต่างๆ
