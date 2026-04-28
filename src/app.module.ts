@@ -5,9 +5,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { SecurityModule } from './shared/security/security.module';
 
 @Module({
-  imports: [ConfigModule, DatabaseModule, AuthModule, UserModule],
+  imports: [ConfigModule, DatabaseModule, AuthModule, UserModule, SecurityModule],
   providers: [
     {
       provide: APP_GUARD,
