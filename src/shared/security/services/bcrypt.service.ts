@@ -8,4 +8,8 @@ export class BcryptService {
   hash(data: string): Promise<string> {
     return bcrypt.hash(data, this.typeConfigService.get('SALT_ROUNDS'));
   }
+
+  compare(data: string, digest: string): Promise<boolean> {
+    return bcrypt.compare(data, digest);
+  }
 }

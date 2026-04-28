@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
+import { User } from 'src/database/generated/prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -14,5 +15,9 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK) // ====> 200
   @Post('login') //default 201
-  async login(@Body() loginDto:LoginDto) {}
+  async login(
+    @Body() loginDto: LoginDto
+  ): Promise<{ accessToken: string; user: User }> {
+    return this.authService.login(loginDto);
+  }
 }
