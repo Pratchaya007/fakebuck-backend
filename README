@@ -4,3 +4,12 @@ pnpm i zod
 
 nest g mo config ------> create Module and announce Gobal Module อะไรที่จะใช้งานบ่อยควรทำ
 nest g s cofing/typed-config --flat --no-spec -----> create con
+nest g mo database
+
+
+- Prisma setthing ( moduleFormat = "cjs" and  Name: "../src/database/generated/prisma"   )
+nest g s database/prisma --flat --no-spec ( create Prisma Service )
+pnpm i @prisma/client @prisma/adapter-pg
+pnpm i -D @types/pg
+pnpm prisma migrate dev
+pnpm prisma generate
