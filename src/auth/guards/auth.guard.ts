@@ -1,34 +1,53 @@
-import { BadRequestException, CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { AuthTokenService } from 'src/shared/security/services/auth-token.service';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly authTokenService: AuthTokenService) {}
+  constructor(
+    private readonly authTokenService: AuthTokenService,
+    private readonly reflector: Reflector
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean | undefined>(
+      IS_PUBLIC_KEY,
+      [context.getHandler(), context.getClass()]
+    );
+
+    if(isPublic) return true;
+
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractJwtFromHeader(request);
-    if(!token) throw new BadRequestException({
-      message: 'Authorization is required, expected: Bearer authorization',
-      code: 'Invalid Authorization'
-    })
+    if (!token)
+      throw new BadRequestException({
+        message: 'Authorization is required, expected: Bearer authorization',
+        code: 'Invalid Authorization'
+      });
 
-    try{
+    try {
       const payload = await this.authTokenService.verify(token);
       request.user = payload;
       console.log(payload);
-    }catch(error) {
+    } catch (error) {
       if (error instanceof Error && error.name === 'JsonWebTokenError')
         throw new UnauthorizedException({
           message: 'Invalid token',
           code: 'Invalid Token'
-        })
+        });
       if (error instanceof Error && error.name === 'TokenExpiredError')
         throw new UnauthorizedException({
           message: 'Token has expired',
           code: 'Token expired'
-        })  
+        });
     }
     return true;
   }

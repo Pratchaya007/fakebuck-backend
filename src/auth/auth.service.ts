@@ -5,6 +5,7 @@ import { LoginDto } from './dtos/login.dto';
 import { BcryptService } from 'src/shared/security/services/bcrypt.service';
 import { User } from 'src/database/generated/prisma/client';
 import { AuthTokenService } from 'src/shared/security/services/auth-token.service';
+import { UserWithOutPassword } from 'src/user/types/uset.type';
 
 @Injectable()
 export class AuthService {
@@ -45,5 +46,9 @@ export class AuthService {
     });
     const { password, ...rest } = user;
     return { accessToken, user: rest };
+  }
+
+  async getCurrentUser(id: string): Promise<UserWithOutPassword> {
+    return this.userService.findById(id);
   }
 }
