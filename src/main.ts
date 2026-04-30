@@ -3,11 +3,11 @@ import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
 import { GlobalValidationPipe } from './common/pipes/global-validation.pipe';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new GlobalValidationPipe());
+  app.useGlobalPipes(new GlobalValidationPipe()); //Pipe
+  // app.useGlobalInterceptors(new TransformInterceptor()); //interceptor
 
   await app.listen(process.env.PORT ?? 3000);
 }
