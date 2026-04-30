@@ -3,5 +3,5 @@ import { CreateUserDto } from 'src/user/dtos/create-user.dto';
 
 export class RegisterDto extends OmitType(CreateUserDto, [
   'avatarUrl',
-  'converUrl'
+  'coverUrl'
 ]) {}

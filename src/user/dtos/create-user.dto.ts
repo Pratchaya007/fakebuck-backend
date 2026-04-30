@@ -50,5 +50,5 @@ export class CreateUserDto {
 
   avatarUrl?: string;
 
-  converUrl?: string;
+  coverUrl?: string;
 }
