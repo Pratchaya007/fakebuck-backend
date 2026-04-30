@@ -6,7 +6,10 @@ const envSchema = z.object({
   DATABASE_URL: z.url(),
   SALT_ROUNDS: z.coerce.number().min(10).int(),
   JWT_SECRET: z.string().min(32),
-  JWT_EXPIRES_IN: z.coerce.number().int().positive()
+  JWT_EXPIRES_IN: z.coerce.number().int().positive(),
+  CLOUDINARY_CLOUD_NAME: z.string().min(1),
+  CLOUDINARY_API_KEY: z.string().min(1),
+  CLOUDINARY_API_SECRET: z.string().min(1)
 });
 
 export type EnvConfigType = z.infer<typeof envSchema>;
