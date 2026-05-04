@@ -1,3 +1,5 @@
+console.log ====> clg
+
 openssl rand -base64 32  ----------> random jwt 
 pnpm i @nestjs/config ---------> config Env
 

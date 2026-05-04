@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { PrismaService } from 'src/database/prisma.service';
+import { UserWithOutPassword } from 'src/user/types/uset.type';
 
 @Injectable()
 export class FriendRequestService {
@@ -55,4 +56,93 @@ export class FriendRequestService {
       throw error;
     }
   }
+
+  async cancelRequest(requesterId: string, recipentId: string): Promise<void> {
+    const result = await this.prisma.friend.deleteMany({
+      where: {
+        status: 'PENDING',
+        requesterId,
+        OR: [
+          {
+            userAId: requesterId,
+            userBId: recipentId
+          },
+          {
+            userAId: recipentId,
+            userBId: requesterId
+          }
+        ]
+      }
+    });
+    if (result.count === 0)
+      throw new NotFoundException({
+        message: 'These user relation conot be found',
+        code: 'relation no found'
+      });
+  }
+
+  async acceptRequest(requesterId: string, recipentId: string): Promise<void> {
+    const result = await this.prisma.friend.updateMany({
+      data: { status: 'PENDING' },
+      where: {
+        status: 'PENDING',
+        requesterId,
+        OR: [
+          { userAId: requesterId, userBId: recipentId },
+          { userAId: recipentId, userBId: requesterId }
+        ]
+      }
+    });
+    // console.log(result);
+    if (result.count === 0)
+      throw new NotFoundException({
+        message: 'These user relation connot be found',
+        code: 'Relation not found'
+      });
+  }
+  async rejectRequest(requesterId: string, recipentId: string): Promise<void> {
+    const result = await this.prisma.friend.deleteMany({
+      where: {
+        status: 'PENDING',
+        requesterId,
+        OR: [
+          { userAId: requesterId, userBId: recipentId },
+          { userAId: recipentId, userBId: requesterId }
+        ]
+      }
+    });
+    // console.log(result);
+    if (result.count === 0)
+      throw new NotFoundException({
+        message: 'These user relation connot be found',
+        code: 'Relation not found'
+      });
+  }
+  async findIncomingRequest(
+    currentUserId: string
+  ): Promise<UserWithOutPassword[]> {
+    const result = await this.prisma.friend.findMany({
+      where: {
+        status: 'PENDING',
+        requesterId: {
+          not: currentUserId
+        },
+        userAId: currentUserId
+      },
+      select: {
+        requester: {
+          omit: {
+            password: true
+          }
+        }
+      }
+    });
+    // console.log(result);
+    return result.map((el) => el.requester);
+  }
 }
+//where userAid = requesterId and userBId = recipientId and requesterId = requesterId and status = 'PENDING'
+//or userAId = recipientId and userBId = requesterId and requesterId = requesterId and status = 'PENDING'
+
+// where ((userAId = requesterId and userBid = recipientid) or (userAid = recipientId and userBid = requesterId))
+// And requesterId = requesterId and status = 'PENDING'
