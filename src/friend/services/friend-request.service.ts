@@ -140,6 +140,26 @@ export class FriendRequestService {
     // console.log(result);
     return result.map((el) => el.requester);
   }
+
+  async findOutgoingRequest(
+    currentUserId: string
+  ): Promise<UserWithOutPassword[]> {
+    const result = await this.prisma.friend.findMany({
+      where: {
+        status: 'PENDING',
+        requesterId: currentUserId,
+        userAId: currentUserId
+      },
+      select: {
+        userB: {
+          omit: {
+            password: true
+          }
+        }
+      }
+    });
+    return result.map((el) => el.userB);
+  }
 }
 //where userAid = requesterId and userBId = recipientId and requesterId = requesterId and status = 'PENDING'
 //or userAId = recipientId and userBId = requesterId and requesterId = requesterId and status = 'PENDING'
