@@ -149,4 +149,28 @@ export class UserService {
     };
     // return user;
   }
+
+  async findAll(search: string = ''): Promise<UserWithOutPassword[]> {
+    return this.prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            firstName: {
+              contains: search,
+              mode: 'insensitive'
+            }
+          },
+          {
+            lastName: {
+              contains: search,
+              mode: 'insensitive'
+            }
+          }
+        ]
+      },
+      omit: {
+        password: true
+      }
+    });
+  }
 }

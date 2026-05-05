@@ -13,6 +13,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorators';
 import type { JwtPayload } from 'src/types/jwt.payload.type';
+import { UserWithOutPassword } from './types/uset.type';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('users')
 export class UserController {
@@ -39,7 +41,7 @@ export class UserController {
   @Get(':userId/profile')
   async findProfileById(
     @CurrentUser() user: JwtPayload,
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string
     // @Query('friends', ParseBoolPipe) includeFriend?: boolean
     // @Query('relationshipStatus', ParseBoolPipe) relationshipStatus?: boolean
   ) {
@@ -47,5 +49,11 @@ export class UserController {
       userId,
       user.sub
     );
+  }
+
+  @Public()
+  @Get()
+  findAll(@Query('search') search?: string): Promise<UserWithOutPassword[]> {
+    return this.userService.findAll(search);
   }
 }
