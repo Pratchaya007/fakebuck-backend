@@ -11,13 +11,16 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { UserWithOutPassword } from './types/uset.type';
 import { CloudinaryService } from 'src/shared/upload/cloudinary.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { FriendService } from 'src/friend/services/friend.service';
+import { RalationshipStatus } from 'src/friend/types/friend.type';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly bcryptService: BcryptService,
-    private readonly cloudinaryService: CloudinaryService
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly friendService: FriendService
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -94,5 +97,56 @@ export class UserService {
       data: updateUserDto,
       omit: { password: true }
     });
+  }
+
+  async findByIdWithRelationToCurrentUser(
+    userId: string,
+    currentUserId: string
+    // includeFriend?: boolean
+  ): Promise<{
+    user: UserWithOutPassword & { friends: UserWithOutPassword[] };
+    relationshipStatus: RalationshipStatus;
+  }> {
+    const result = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        usersA: {
+          where: {
+            status: 'ACCEPTED'
+          },
+          include: {
+            userB: {
+              omit: {
+                password: true
+              }
+            }
+          }
+        }
+      },
+      omit: {
+        password: true
+      }
+    });
+    if (!result) {
+      throw Error('');
+    }
+    const relationshipStatus =
+      await this.friendService.findRelationshipBetweenTwoUser(
+        userId,
+        currentUserId
+      );
+    // const relation = await this.prisma.friend.findFirst({
+    //   where: {
+    //     userAId: userId,
+    //     userBId: currentUserId
+    //   }
+    // })
+
+    const { usersA, ...user } = result;
+    return {
+      user: { ...user, friends: usersA.map((el) => el.userB) },
+      relationshipStatus
+    };
+    // return user;
   }
 }

@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { UserWithOutPassword } from 'src/user/types/uset.type';
+import { RalationshipStatus } from '../types/friend.type';
 
 @Injectable()
 export class FriendService {
@@ -22,5 +23,43 @@ export class FriendService {
     });
 
     return result.map((el) => el.userB);
+  }
+
+  async unfriend(currentUserId: string, friendId: string): Promise<void> {
+    const result = await this.prisma.friend.deleteMany({
+      where: {
+        status: 'ACCEPTED',
+        OR: [
+          { userAId: currentUserId, userBId: friendId },
+          { userAId: friendId, userBId: currentUserId }
+        ]
+      }
+    });
+
+    if (result.count === 0) {
+      throw new NotFoundException({
+        message: 'These user are Not not become frined together',
+        code: 'Not friend'
+      });
+    }
+  }
+
+  async findRelationshipBetweenTwoUser(
+    targetUserId: string,
+    userId: string
+  ): Promise<RalationshipStatus> {
+    if (targetUserId === userId) return 'SELF';
+
+    const relationship = await this.prisma.friend.findFirst({
+      where: {
+        userAId: targetUserId,
+        userBId: userId
+      }
+    });
+    if (!relationship) return 'NONE';
+    if (relationship.status === 'ACCEPTED') return 'FRIEND';
+    if (relationship.requesterId === userId) return 'REQUEST_SENT';
+
+    return 'REQUEST_RECEIVED';
   }
 }
