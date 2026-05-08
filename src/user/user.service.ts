@@ -12,7 +12,8 @@ import { UserWithOutPassword } from './types/uset.type';
 import { CloudinaryService } from 'src/shared/upload/cloudinary.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { FriendService } from 'src/friend/services/friend.service';
-import { RalationshipStatus } from 'src/friend/types/friend.type';
+import { RelationshipStatus } from 'src/friend/types/friend.type';
+
 
 @Injectable()
 export class UserService {
@@ -105,7 +106,7 @@ export class UserService {
     // includeFriend?: boolean
   ): Promise<{
     user: UserWithOutPassword & { friends: UserWithOutPassword[] };
-    relationshipStatus: RalationshipStatus;
+    relationshipStatus: RelationshipStatus;
   }> {
     const result = await this.prisma.user.findUnique({
       where: { id: userId },

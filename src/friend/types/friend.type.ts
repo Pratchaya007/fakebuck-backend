@@ -1,4 +1,4 @@
-export type RalationshipStatus =
+export type RelationshipStatus =
   | 'NONE'
   | 'FRIEND'
   | 'SELF'

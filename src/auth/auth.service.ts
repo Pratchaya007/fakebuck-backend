@@ -6,22 +6,26 @@ import { BcryptService } from 'src/shared/security/services/bcrypt.service';
 import { User } from 'src/database/generated/prisma/client';
 import { AuthTokenService } from 'src/shared/security/services/auth-token.service';
 import { UserWithOutPassword } from 'src/user/types/uset.type';
+import { TypedConfigService } from 'src/config/typed-config.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly bcryptservice: BcryptService,
-    private readonly authtokenService: AuthTokenService
+    private readonly authtokenService: AuthTokenService,
+    private readonly typedConfigService: TypedConfigService
   ) {}
 
   async register(regiterDto: RegisterDto): Promise<void> {
     await this.userService.create(regiterDto);
   }
 
-  async login(
-    loginDto: LoginDto
-  ): Promise<{ accessToken: string; user: Omit<User, 'password'> }> {
+  async login(loginDto: LoginDto): Promise<{
+    accessToken: string;
+    user: Omit<User, 'password'>;
+    expiresIn: number;
+  }> {
     //1. ค้นหา user in database ไม่มีก็แจ้ง error ออกไป
     const user = await this.userService.findByEmail(loginDto.email);
     if (!user)
@@ -45,7 +49,11 @@ export class AuthService {
       email: user.email
     });
     const { password, ...rest } = user;
-    return { accessToken, user: rest };
+    return {
+      accessToken,
+      user: rest,
+      expiresIn: this.typedConfigService.get('JWT_EXPIRES_IN')
+    };
   }
 
   async getCurrentUser(id: string): Promise<UserWithOutPassword> {

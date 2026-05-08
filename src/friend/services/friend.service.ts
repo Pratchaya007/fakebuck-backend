@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { UserWithOutPassword } from 'src/user/types/uset.type';
-import { RalationshipStatus } from '../types/friend.type';
+import { RelationshipStatus } from '../types/friend.type';
 
 @Injectable()
 export class FriendService {
@@ -47,7 +47,7 @@ export class FriendService {
   async findRelationshipBetweenTwoUser(
     targetUserId: string,
     userId: string
-  ): Promise<RalationshipStatus> {
+  ): Promise<RelationshipStatus> {
     if (targetUserId === userId) return 'SELF';
 
     const relationship = await this.prisma.friend.findFirst({
