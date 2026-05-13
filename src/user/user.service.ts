@@ -14,7 +14,6 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { FriendService } from 'src/friend/services/friend.service';
 import { RelationshipStatus } from 'src/friend/types/friend.type';
 
-
 @Injectable()
 export class UserService {
   constructor(
@@ -173,5 +172,30 @@ export class UserService {
         password: true
       }
     });
+  }
+
+  async findAllWithNoRelationShip(
+    currentUserId: string
+  ): Promise<UserWithOutPassword[]> {
+    const withRelationUsers = await this.prisma.friend.findMany({
+      where: {
+        userAId: currentUserId
+      },
+      select: {
+        userBId: true
+      }
+    });
+
+    const noRelationUsers = await this.prisma.user.findMany({
+      where: {
+        id: {
+          notIn: withRelationUsers.map((el) => el.userBId)
+        }
+      },
+      omit: {
+        password: true
+      }
+    });
+    return noRelationUsers;
   }
 }

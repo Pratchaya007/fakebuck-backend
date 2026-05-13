@@ -83,7 +83,7 @@ export class FriendRequestService {
 
   async acceptRequest(requesterId: string, recipentId: string): Promise<void> {
     const result = await this.prisma.friend.updateMany({
-      data: { status: 'PENDING' },
+      data: { status: 'ACCEPTED' },
       where: {
         status: 'PENDING',
         requesterId,
