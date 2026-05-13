@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsAlphanumeric,
@@ -12,12 +13,20 @@ import { Trim } from 'src/common/decorators/trim.decorator';
 import { Gender } from 'src/database/generated/prisma/enums';
 
 export class CreateUserDto {
+  @ApiProperty({
+    example: 'a@gmail.com',
+    description: 'An email address to be registered. Must be unique'
+  })
   @Trim()
   @IsEmail({}, { message: 'Invalid email address' })
   @IsString({ message: 'Email must be a string' })
   @IsNotEmpty({ message: 'Email is required' })
   email!: string;
 
+  @ApiProperty({
+    example: 'Nut_93244.tts',
+    description: 'A user password. Must have at least 6 characters'
+  })
   @Trim()
   @MinLength(6, { message: 'Password must have at least 6 characters' })
   @IsAlphanumeric('en-US', {

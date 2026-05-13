@@ -15,6 +15,13 @@ import { CurrentUser } from './decorators/current-user.decorators';
 import type { JwtPayload } from 'src/types/jwt.payload.type';
 import { UserWithOutPassword } from 'src/user/types/uset.type';
 import { ResponseMessage } from 'src/common/decorators/message-response.decorator';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
+import { LoginResponseDto } from './dtos/login-reponse.dts';
 
 @Controller('auth')
 export class AuthController {
@@ -27,6 +34,14 @@ export class AuthController {
     await this.authService.register(regiterDto);
   }
 
+  @ApiOkResponse({
+    description: 'Successfully operation',
+    type: LoginResponseDto
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The provided credentials is ivalid'
+  })
+  @ApiBadRequestResponse()
   @Public()
   @HttpCode(HttpStatus.OK) // ====> 200
   @Post('login') //default 201
@@ -38,6 +53,7 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @ApiBearerAuth()
   @Get('me')
   async getCurrentUser(
     @CurrentUser() user: JwtPayload

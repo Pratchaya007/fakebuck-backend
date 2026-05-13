@@ -189,7 +189,7 @@ export class UserService {
     const noRelationUsers = await this.prisma.user.findMany({
       where: {
         id: {
-          notIn: withRelationUsers.map((el) => el.userBId)
+          notIn: [...withRelationUsers.map((el) => el.userBId), currentUserId]
         }
       },
       omit: {
